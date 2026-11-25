@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QueueLess — Intelligent Queue Management & Digital Twin</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Interactive Demonstration Mode Bar -->
+  <aside class="demo-banner">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="badge">CAPSTONE DEMO MODE</span>
+      <span>SIMATS Engineering • Review 1 Active Environment</span>
+    </div>
+    <div class="demo-actions">
+      <button class="demo-btn" onclick="demoAddCustomer()">⚡ Quick Token</button>
+      <button class="demo-btn" onclick="demoSpikeDemand()">⚡ Inject Rush Hour</button>
+      <button class="demo-btn" onclick="demoAutoBalance()">⚡ Auto-Balance</button>
+      <button class="demo-btn" onclick="demoResetQueue()">⚡ Reset Queue</button>
+      <span style="opacity: 0.4;">|</span>
+      <button class="demo-btn" onclick="quickSwitchRole('customer@demo.com', 'Customer@123', 'customer')">👤 Customer</button>
+      <button class="demo-btn" onclick="quickSwitchRole('staff@demo.com', 'Staff@123', 'staff')">👔 Staff</button>
+      <button class="demo-btn" onclick="quickSwitchRole('admin@demo.com', 'Admin@123', 'admin')">🛡️ Admin</button>
+    </div>
+  </aside>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-wrapper" onclick="switchView('landing')">
+      <div class="brand-icon">Q</div>
+      <div>
+        <div class="brand-title">QueueLess</div>
+        <div class="brand-sub">Intelligent Queue & Wait Prediction</div>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <button class="nav-tab active" id="tab-landing" onclick="switchView('landing')">Home</button>
+      <button class="nav-tab" id="tab-customer" onclick="switchView('customer')">Customer Portal</button>
+      <button class="nav-tab" id="tab-staff" onclick="switchView('staff')">Staff Desk</button>
+      <button class="nav-tab" id="tab-admin" onclick="switchView('admin')">Admin & Twin</button>
+    </nav>
+
+    <div class="header-right">
+      <button class="btn btn-secondary btn-sm" onclick="toggleTheme()" title="Toggle Light/Dark Theme">🌓 Theme</button>
+      <div class="user-status-pill">
+        <span class="status-dot"></span>
+        <span id="current-user-display">Guest</span>
+      </div>
+      <button class="btn btn-sm btn-secondary" id="auth-btn" onclick="openLoginModal()">Sign in</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ==================== VIEW 0: LANDING PAGE ==================== -->
+    <section id="view-landing" class="view-section active">
+      <div class="landing-hero">
+        <div class="hero-pill">Java 17 • Spring Boot • Digital Twin • Explainable Analytics</div>
+        <h1 class="hero-title">Skip Uncertain Waiting Lines.<br><span>Experience Intelligent Virtual Queues.</span></h1>
+        <p class="hero-desc">
+          QueueLess replaces physical queues with personalized wait-time forecasting, QR arrival verification,
+          and discrete-event digital twin simulation for clinics, banks, and public offices.
+        </p>
+        <div style="display: flex; gap: 14px; justify-content: center;">
+          <button class="btn" onclick="quickSwitchRole('customer@demo.com', 'Customer@123', 'customer')">Launch Customer Experience</button>
+          <button class="btn btn-secondary" onclick="quickSwitchRole('admin@demo.com', 'Admin@123', 'admin')">Open Digital Twin Console</button>
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-top: 24px;">
+        <div class="kpi-card teal">
+          <span class="kpi-label">Active Virtual Branches</span>
+          <span class="kpi-value" id="landing-branches">4</span>
+          <span class="kpi-trend down">● Real-time WebSocket sync</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Average Wait Reduction</span>
+          <span class="kpi-value">32%</span>
+          <span class="kpi-trend down">▼ Compared to physical line</span>
+        </div>
+        <div class="kpi-card green">
+          <span class="kpi-label">Dynamic Counter Utilization</span>
+          <span class="kpi-value">83.5%</span>
+          <span class="kpi-trend down">▲ Optimal load balance</span>
+        </div>
+        <div class="kpi-card amber">
+          <span class="kpi-label">Prediction Accuracy</span>
+          <span class="kpi-value">±1.8 min</span>
+          <span class="kpi-trend neutral">★ Multi-factor EMA engine</span>
+        </div>
+      </div>
+
+      <div class="role-cards-container">
+        <div class="role-card customer" onclick="quickSwitchRole('customer@demo.com', 'Customer@123', 'customer')">
+          <div class="role-card-icon">📱</div>
+          <h3>Module 1: Customer Portal</h3>
+          <p>Book virtual tokens, monitor live position, verify arrival via QR code, and receive turn alerts.</p>
+          <span class="badge called">Explore Customer View →</span>
+        </div>
+        <div class="role-card staff" onclick="quickSwitchRole('staff@demo.com', 'Staff@123', 'staff')">
+          <div class="role-card-icon">💼</div>
+          <h3>Module 2: Staff Console</h3>
+          <p>Call next customer, manage service stopwatch, handle priority queues, and scan arrival QR codes.</p>
+          <span class="badge in_service">Explore Staff View →</span>
+        </div>
+        <div class="role-card admin" onclick="quickSwitchRole('admin@demo.com', 'Admin@123', 'admin')">
+          <div class="role-card-icon">📊</div>
+          <h3>Module 3: Digital Twin & Admin</h3>
+          <p>Run discrete-event what-if simulations, auto-allocate counters, and forecast future congestion.</p>
+          <span class="badge completed">Explore Admin View →</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW 1: CUSTOMER PORTAL ==================== -->
+    <section id="view-customer" class="view-section">
+      <div class="card-header" style="margin-bottom: 20px;">
+        <div>
+          <h2>Customer Experience Module</h2>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">Manage your queue token, check live position, and track arrival status.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary btn-sm" onclick="openBestHoursModal()">📅 Best Time to Visit</button>
+          <button class="btn btn-sm" onclick="openGetTokenModal()">+ Get New Token</button>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom: 24px;">
+        <!-- Card 1: Your Token -->
+        <div class="card" style="text-align: center;">
+          <span class="kpi-label">Your Active Token</span>
+          <div class="token-big-number" id="cust-token-number">—</div>
+          <div class="token-service-tag" id="cust-token-service">No Active Token</div>
+          <div style="margin-top: 16px; display: flex; gap: 8px; justify-content: center;">
+            <button class="btn btn-sm btn-secondary" id="cust-view-qr-btn" onclick="viewMyQrToken()" style="display:none;">View QR Code</button>
+            <button class="btn btn-sm btn-danger" id="cust-cancel-token-btn" onclick="cancelMyToken()" style="display:none;">Cancel</button>
+          </div>
+        </div>
+
+        <!-- Card 2: Queue Status -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Live Queue Status</span>
+            <span class="badge in_service" id="cust-service-badge">Live</span>
+          </div>
+          <div style="display: flex; justify-content: space-around; margin: 16px 0;">
+            <div style="text-align: center;">
+              <span class="kpi-label">Now Serving</span>
+              <div style="font-size: 2rem; font-weight: 800; color: #38bdf8;" id="cust-now-serving">A039</div>
+            </div>
+            <div style="width: 1px; background: var(--border-color);"></div>
+            <div style="text-align: center;">
+              <span class="kpi-label">Your Position</span>
+              <div style="font-size: 2rem; font-weight: 800; color: var(--warning);" id="cust-queue-position">6</div>
+            </div>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;" id="cust-queue-status-text">
+            5 customers waiting ahead of you
+          </div>
+        </div>
+
+        <!-- Card 3: Estimated Wait Time -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Estimated Wait Time</span>
+            <span class="badge completed" id="cust-confidence-badge">High Confidence</span>
+          </div>
+          <div style="text-align: center; margin: 12px 0;">
+            <div style="font-size: 2.4rem; font-weight: 800; color: var(--success);" id="cust-wait-minutes">≈ 18 minutes</div>
+            <div style="font-size: 0.8rem; color: var(--text-dim);" id="cust-wait-range">Range: 15 - 22 min</div>
+          </div>
+          <details style="font-size: 0.8rem; color: var(--text-muted); background: var(--bg-secondary); padding: 8px 12px; border-radius: var(--radius-sm);">
+            <summary style="cursor: pointer; font-weight: 600;">Explain this wait time</summary>
+            <div id="cust-explain-breakdown" style="margin-top: 6px; line-height: 1.6;">
+              • People ahead: 5<br>
+              • Active counters: 2<br>
+              • Average duration: 5.2 min/person
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Stepper Progress Tracker -->
+      <div class="card" style="margin-bottom: 24px;">
+        <span class="card-title" style="margin-bottom: 8px;">Queue Progress Tracker</span>
+        <div class="stepper-container">
+          <div class="stepper-progress-bar">
+            <div class="stepper-fill" id="cust-stepper-fill" style="width: 50%;"></div>
+          </div>
+          <div class="step-node completed" id="step-node-1">
+            <div class="step-circle">✓</div>
+            <div class="step-label">Token Generated</div>
+          </div>
+          <div class="step-node completed" id="step-node-2">
+            <div class="step-circle">✓</div>
+            <div class="step-label">In Virtual Queue</div>
+          </div>
+          <div class="step-node active" id="step-node-3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Waiting Turn</div>
+          </div>
+          <div class="step-node" id="step-node-4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Being Served</div>
+          </div>
+          <div class="step-node" id="step-node-5">
+            <div class="step-circle">5</div>
+            <div class="step-label">Completed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Tokens History Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Your Recent Token History</span>
+          <button class="btn btn-secondary btn-sm" onclick="loadCustomerTokens()">Refresh</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Token #</th>
+                <th>Service</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cust-tokens-table-body">
+              <tr><td colspan="6" style="text-align: center; color: var(--text-dim);">Loading token history...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW 2: STAFF OPERATIONS ==================== -->
+    <section id="view-staff" class="view-section">
+      <div class="card-header" style="margin-bottom: 20px;">
+        <div>
+          <h2>Smart Staff Operations Console</h2>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">Manage live counter flow, serve customers, and verify arrival QR tokens.</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <select id="staff-service-select" class="form-control" style="width: 220px;" onchange="changeStaffService()"></select>
+          <select id="staff-counter-select" class="form-control" style="width: 200px;"></select>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom: 24px;">
+        <!-- Now Serving Box -->
+        <div class="now-serving-box">
+          <span style="font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8;">Now Serving at Desk</span>
+          <div class="now-serving-token" id="staff-now-serving-token">A015</div>
+          <div style="font-size: 0.95rem; color: #e2e8f0;" id="staff-now-serving-service">Account Service • Counter 1</div>
+          <div class="stopwatch-box">
+            <span>⏱️ Consultation:</span>
+            <span id="staff-stopwatch">03:42</span>
+          </div>
+        </div>
+
+        <!-- Waiting Queue Overview -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Waiting Queue Depth</span>
+            <span class="badge waiting" id="staff-waiting-badge">Active</span>
+          </div>
+          <div style="text-align: center; margin: 16px 0;">
+            <div style="font-size: 3.2rem; font-weight: 800; color: var(--text-main);" id="staff-waiting-count">12</div>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">Customers waiting in line</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-sm btn-secondary" style="flex:1;" onclick="demoAddCustomer()">+ Add Customer</button>
+            <button class="btn btn-sm btn-secondary" style="flex:1;" onclick="loadStaffQueue()">Refresh</button>
+          </div>
+        </div>
+
+        <!-- QR Arrival Scanner / Check-in -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">QR Arrival Verification</span>
+            <span class="badge completed">ZXing Verified</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+            Scan arrival QR token from customer's phone or manually enter token payload.
+          </p>
+          <div class="form-group">
+            <input type="text" id="staff-qr-input" class="form-control" placeholder="e.g. QUEUELESS:1:uuid-secret">
+          </div>
+          <button class="btn btn-success btn-sm" style="width: 100%;" onclick="staffCheckInQr()">Verify Customer Arrival</button>
+        </div>
+      </div>
+
+      <!-- Action Control Buttons -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn" style="flex: 2; font-size: 1rem;" onclick="staffCallNext()">📢 Call Next Customer</button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="staffStartService()">▶️ Start Service</button>
+          <button class="btn btn-success" style="flex: 2; font-size: 1rem;" onclick="staffCompleteService()">✓ Mark as Served</button>
+          <button class="btn btn-danger" style="flex: 1;" onclick="staffSkipToken()">⏭️ Skip Token</button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="staffRecallToken()">🔄 Recall</button>
+        </div>
+      </div>
+
+      <!-- Live Waiting Queue Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Live Queue Roster</span>
+          <span class="badge in_service" id="staff-queue-service-title">Account Service</span>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Token No.</th>
+                <th>Customer</th>
+                <th>Priority</th>
+                <th>QR Verified</th>
+                <th>Wait Time (Est.)</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staff-queue-table-body">
+              <tr><td colspan="8" style="text-align: center; color: var(--text-dim);">Loading waiting queue...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW 3: ADMIN & DIGITAL TWIN ==================== -->
+    <section id="view-admin" class="view-section">
+      <div class="card-header" style="margin-bottom: 20px;">
+        <div>
+          <h2>Predictive Analytics & Digital Twin Intelligence</h2>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">Monitor real-time system performance, test what-if staffing simulations, and export reports.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary btn-sm" onclick="exportReport('csv')">📥 Export CSV</button>
+          <button class="btn btn-secondary btn-sm" onclick="exportReport('pdf')">📄 Export PDF</button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="grid-4" style="margin-bottom: 24px;">
+        <div class="kpi-card">
+          <span class="kpi-label">Current Queue</span>
+          <span class="kpi-value" id="admin-current-queue">42</span>
+          <span class="kpi-trend down">▼ -18% from last hour</span>
+        </div>
+        <div class="kpi-card teal">
+          <span class="kpi-label">Active Counters</span>
+          <span class="kpi-value" id="admin-active-counters">5 / 6</span>
+          <span class="kpi-trend down">● 83% Utilization</span>
+        </div>
+        <div class="kpi-card green">
+          <span class="kpi-label">Average Waiting Time</span>
+          <span class="kpi-value" id="admin-avg-wait">8.4 min</span>
+          <span class="kpi-trend down">▼ -32% (was 12.4 min)</span>
+        </div>
+        <div class="kpi-card amber">
+          <span class="kpi-label">Predicted Congestion</span>
+          <span class="kpi-value" id="admin-pred-congestion">Low</span>
+          <span class="kpi-trend neutral">Next 30 min horizon</span>
+        </div>
+      </div>
+
+      <!-- Charts Section: Queue Analytics & Congestion Prediction -->
+      <div class="grid-2" style="margin-bottom: 24px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📈 Queue Analytics (Arrivals vs Handled)</span>
+            <span class="badge in_service">Live Trend</span>
+          </div>
+          <div style="height: 260px;">
+            <canvas id="chart-queue-analytics"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔮 Congestion Prediction (Actual vs Forecast)</span>
+            <span class="badge called">Horizon: 60 min</span>
+          </div>
+          <div style="height: 260px;">
+            <canvas id="chart-congestion-prediction"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Digital Twin Simulator Canvas & Controls -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <div>
+            <span class="card-title">🌐 Digital Twin Simulation Engine</span>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">
+              Discrete-event simulation modeling customer arrival events, priority routing, and counter throughput.
+            </p>
+          </div>
+          <button class="btn btn-sm" onclick="runDigitalTwinSimulation()">▶ Run Simulation</button>
+        </div>
+
+        <!-- 2D Virtual Hall Canvas -->
+        <div class="digital-twin-container">
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: #64748b; margin-bottom: 12px; font-weight: 700;">
+            Virtual Service Desks (Real-Time Physical Twin)
+          </div>
+          <div class="simulation-counters-row" id="sim-counters-row">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: #64748b; margin: 16px 0 8px 0; font-weight: 700;">
+            Waiting Customer Area (Live Simulated Backlog)
+          </div>
+          <div class="sim-waiting-area" id="sim-waiting-area">
+            <!-- Simulated customer dots -->
+          </div>
+        </div>
+
+        <!-- Simulation Sliders -->
+        <div class="grid-4" style="margin-top: 20px;">
+          <div class="form-group">
+            <label class="form-label">Active Counters: <b id="val-sim-counters">4</b></label>
+            <input type="range" min="1" max="8" value="4" class="form-control" id="slider-sim-counters" oninput="document.getElementById('val-sim-counters').innerText=this.value">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Arrival Rate (λ/hr): <b id="val-sim-arrivals">24</b></label>
+            <input type="range" min="5" max="60" value="24" class="form-control" id="slider-sim-arrivals" oninput="document.getElementById('val-sim-arrivals').innerText=this.value">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Avg Duration (μ min): <b id="val-sim-duration">5.5</b></label>
+            <input type="range" min="2" max="15" step="0.5" value="5.5" class="form-control" id="slider-sim-duration" oninput="document.getElementById('val-sim-duration').innerText=this.value">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priority Ratio: <b id="val-sim-priority">15%</b></label>
+            <input type="range" min="0" max="50" value="15" class="form-control" id="slider-sim-priority" oninput="document.getElementById('val-sim-priority').innerText=this.value+'%'">
+          </div>
+        </div>
+
+        <!-- Simulation Results Comparison Box -->
+        <div id="sim-results-box" style="margin-top: 16px; display: none; background: var(--bg-secondary); padding: 16px; border-radius: var(--radius-md);">
+          <div class="grid-4" style="text-align: center;">
+            <div>
+              <span class="kpi-label">Projected Wait Time</span>
+              <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="sim-res-wait">7.9 min</div>
+            </div>
+            <div>
+              <span class="kpi-label">Expected Queue Length</span>
+              <div style="font-size: 1.5rem; font-weight: 700; color: #38bdf8;" id="sim-res-queue">14</div>
+            </div>
+            <div>
+              <span class="kpi-label">Throughput Rate</span>
+              <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);" id="sim-res-throughput">38 / hr</div>
+            </div>
+            <div>
+              <span class="kpi-label">Resource Utilization</span>
+              <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-cyan);" id="sim-res-utilization">81%</div>
+            </div>
+          </div>
+          <div style="margin-top: 12px; font-size: 0.85rem; color: #cbd5e1; text-align: center;" id="sim-res-verdict">
+            Recommendation: Proposed configuration maintains wait time under 10 minutes with optimal counter utilization.
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Counters Management & ML Evaluation Comparison -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🖥️ Counter Availability Management</span>
+            <button class="btn btn-secondary btn-sm" onclick="loadAdminCounters()">Refresh</button>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Counter</th>
+                  <th>Service</th>
+                  <th>Status</th>
+                  <th>Toggle</th>
+                </tr>
+              </thead>
+              <tbody id="admin-counters-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🧠 Model Accuracy Comparison (MAE / RMSE)</span>
+            <span class="badge completed">Evaluation</span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+            Benchmarking pure Java Multiple Linear Regression against Exponential Smoothing and Moving Average baselines.
+          </p>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Algorithm</th>
+                  <th>MAE (min)</th>
+                  <th>RMSE</th>
+                  <th>R² Score</th>
+                </tr>
+              </thead>
+              <tbody id="admin-model-eval-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 10px;" id="admin-model-eval-note">
+            Evaluation uses chronological split on completed service logs.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal 1: Login / Register -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('modal-login')">×</button>
+      <h3 style="margin-bottom: 4px;">Sign in to QueueLess</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+        Choose a demo account or sign in with your credentials.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="login-email" class="form-control" value="customer@demo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-password" class="form-control" value="Customer@123">
+      </div>
+      <button class="btn" style="width: 100%; margin-top: 8px;" onclick="performLogin()">Sign in</button>
+
+      <div style="margin-top: 20px; font-size: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 16px;">
+        <b>Demo Accounts:</b><br>
+        • Customer: <code>customer@demo.com</code> / <code>Customer@123</code><br>
+        • Staff: <code>staff@demo.com</code> / <code>Staff@123</code><br>
+        • Admin: <code>admin@demo.com</code> / <code>Admin@123</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Get Token -->
+  <div class="modal-overlay" id="modal-get-token">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('modal-get-token')">×</button>
+      <h3 style="margin-bottom: 4px;">Book Virtual Queue Token</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+        Select your required service and generate your digital token.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">Service Required</label>
+        <select id="token-service-select" class="form-control"></select>
+      </div>
+
+      <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px;">
+        <input type="checkbox" id="token-priority-check" onchange="togglePriorityReason(this.checked)">
+        <label for="token-priority-check" class="form-label" style="cursor: pointer; margin: 0;">Priority / Expedited Queue</label>
+      </div>
+
+      <div class="form-group" id="priority-reason-group" style="display: none;">
+        <label class="form-label">Priority Reason</label>
+        <select id="token-priority-reason" class="form-control">
+          <option value="SENIOR_CITIZEN">Senior Citizen (60+)</option>
+          <option value="MEDICAL_NEED">Medical Need / Physical Assistance</option>
+          <option value="PREGNANCY">Expectant Mother</option>
+          <option value="EXPRESS">Express Document Pickup</option>
+        </select>
+      </div>
+
+      <button class="btn" style="width: 100%; margin-top: 12px;" onclick="confirmCreateToken()">Generate Digital Token</button>
+    </div>
+  </div>
+
+  <!-- Modal 3: QR Token Display -->
+  <div class="modal-overlay" id="modal-qr">
+    <div class="modal-box" style="text-align: center;">
+      <button class="modal-close" onclick="closeModal('modal-qr')">×</button>
+      <h3 id="modal-qr-title">Digital Token QR Code</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+        Present this QR code to the scanner at the service desk to verify your physical arrival.
+      </p>
+      <div style="background: #ffffff; padding: 16px; border-radius: var(--radius-md); display: inline-block; margin-bottom: 16px;">
+        <img id="modal-qr-img" src="" alt="QR Code" style="width: 200px; height: 200px; display: block;">
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-family: monospace;" id="modal-qr-secret-text">
+        QUEUELESS:1:secret
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Best Visiting Hours -->
+  <div class="modal-overlay" id="modal-visits">
+    <div class="modal-box" style="max-width: 600px;">
+      <button class="modal-close" onclick="closeModal('modal-visits')">×</button>
+      <h3 style="margin-bottom: 4px;">Recommended Visiting Windows</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+        Historical arrival density analysis to help you avoid peak waiting times.
+      </p>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Time Slot</th>
+              <th>Crowd Level</th>
+              <th>Recommendation</th>
+            </tr>
+          </thead>
+          <tbody id="visits-table-body">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

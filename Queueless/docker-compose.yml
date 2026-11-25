@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: queueless
+      MYSQL_USER: queueless
+      MYSQL_PASSWORD: queueless123
+      MYSQL_ROOT_PASSWORD: rootpass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - queue_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -prootpass123"]
+      interval: 5s
+      retries: 15
+volumes:
+  queue_data:
